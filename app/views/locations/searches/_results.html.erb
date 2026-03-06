@@ -1,0 +1,25 @@
+<ul class="menu bg-base-100 rounded-box shadow mt-1 w-full">
+  <% locations.each do |location| %>
+    <li>
+      <button type="button" data-action="click->autocomplete#select" data-id="<%= location.id %>" data-name="<%= location.name %>">
+        <%= location.name %>
+        <% if location.district.present? %>
+          <span class="opacity-50 text-xs"><%= location.district %></span>
+        <% end %>
+      </button>
+    </li>
+  <% end %>
+
+  <% if params[:query].present? %>
+    <li>
+      <button type="button"
+              class="text-primary font-bold"
+              data-action="click->autocomplete#openModal"
+              data-query="<%= params[:query] %>"
+              data-modal-id="new_location_modal"
+              data-input-id="modal_location_name">
+        + Aggiungi "<%= params[:query] %>"
+      </button>
+    </li>
+  <% end %>
+</ul>

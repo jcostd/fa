@@ -1,0 +1,43 @@
+<%= turbo_stream_from "jobs" %>
+
+<div class="flex items-start sm:items-center justify-between gap-4 mb-2">
+  <div>
+    <h1 class="text-3xl font-extrabold tracking-tight text-base-content">Lavori</h1>
+    <p class="text-sm text-base-content/60 mt-1">Gestisci i servizi fotografici e le assegnazioni.</p>
+  </div>
+
+  <%= link_to new_job_path, class: "btn btn-primary" do %>
+    <%= icon("add", classes: "w-5 h-5") %>
+    <span class="hidden sm:inline">Nuovo Lavoro</span>
+  <% end %>
+</div>
+
+<div class="flex flex-wrap items-center gap-2 mb-6">
+
+  <%= link_to "Tutti", jobs_path,
+  class: "btn btn-sm rounded-full #{params[:filter].blank? ? 'btn-neutral' : 'btn-ghost border border-base-300 hover:border-base-content/30'}" %>
+
+  <%= link_to "Futuri", jobs_path(filter: 'future'),
+  class: "btn btn-sm rounded-full #{params[:filter] == 'future' ? 'btn-neutral' : 'btn-ghost border border-base-300 hover:border-base-content/30'}" %>
+
+  <%= link_to jobs_path(filter: 'unassigned'),
+  class: "btn btn-sm rounded-full #{params[:filter] == 'unassigned' ? 'btn-neutral' : 'btn-ghost border border-base-300 hover:border-base-content/30'}" do %>
+    Senza fotografo
+    <% if params[:filter] == 'unassigned' %>
+      <div class="badge badge-xs badge-error"></div>
+    <% end %>
+  <% end %>
+
+</div>
+
+<div class="flex flex-col gap-2" id="jobs_list">
+  <% if @jobs.any? %>
+    <%= render @jobs %>
+    <%== @pagy.series_nav %>
+  <% else %>
+    <div class="py-12 text-center text-base-content/50 bg-base-100 rounded-box border border-base-200 border-dashed">
+      <%= icon("calendar", classes: "w-12 h-12 mx-auto mb-3 opacity-20") %>
+      <p>Nessun lavoro trovato per questo filtro.</p>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,73 @@
+<%= form_with(model: job, class: "flex flex-col gap-4") do |form| %>
+
+  <% if job.errors.any? %>
+    <div role="alert" class="alert alert-error">
+      <span><%= pluralize(job.errors.count, "errore impedisce", "errori impediscono") %> il salvataggio:</span>
+      <ul>
+        <% job.errors.each do |error| %>
+          <li>- <%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Descrizione (Brogliaccio) *</legend>
+    <%= form.text_area :description, class: "textarea w-full", rows: 3 %>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Note Operative</legend>
+    <%= form.text_area :notes, class: "textarea w-full", rows: 2 %>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Data *</legend>
+    <%= form.date_field :date, class: "input w-full" %>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Inizio (Opzionale)</legend>
+    <%= form.datetime_field :start_at, class: "input w-full" %>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Fine (Opzionale)</legend>
+    <%= form.datetime_field :end_at, class: "input w-full" %>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <label class="flex items-center gap-2 cursor-pointer">
+      <%= form.check_box :with_video, class: "checkbox" %>
+      <span>Servizio con attrezzatura Video?</span>
+    </label>
+  </fieldset>
+
+  <%= render "shared/autocomplete",
+	     form: form,
+	     field: :location_id,
+	     label: "Location",
+	     search_url: locations_searches_path,
+	     display_value: job.location&.name %>
+
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Location (Legacy)</legend>
+    <%= form.text_field :legacy_location, class: "input w-full" %>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Ora inizio (Legacy)</legend>
+    <%= form.text_field :from_time, class: "input w-full" %>
+  </fieldset>
+
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">Ora fine (Legacy)</legend>
+    <%= form.text_field :to_time, class: "input w-full" %>
+  </fieldset>
+
+  <div class="mt-4">
+    <%= form.submit "Salva Lavoro", class: "btn btn-primary" %>
+  </div>
+
+<% end %>

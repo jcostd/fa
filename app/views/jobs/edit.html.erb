@@ -1,0 +1,39 @@
+<div>
+  <h1>Modifica Lavoro (ID: <%= @job.id %>)</h1>
+
+  <%= render "form", job: @job %>
+
+  <dialog id="new_location_modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">Nuova Location</h3>
+
+      <%= form_with model: Location.new, class: "flex flex-col gap-4 mt-4" do |f| %>
+
+	<%= hidden_field_tag :return_to, request.fullpath %>
+
+	<fieldset class="fieldset">
+          <legend class="fieldset-legend">Nome</legend>
+          <%= f.text_field :name, id: "modal_location_name", class: "input w-full", required: true %>
+	</fieldset>
+
+	<fieldset class="fieldset">
+          <legend class="fieldset-legend">Sestiere / Zona</legend>
+          <%= f.text_field :district, class: "input w-full", placeholder: "Es: Dorsoduro..." %>
+	</fieldset>
+
+	<div class="modal-action">
+          <button type="button" class="btn" onclick="new_location_modal.close()">Annulla</button>
+          <%= f.submit "Salva e Usa", class: "btn btn-primary" %>
+	</div>
+      <% end %>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>chiudi</button></form>
+  </dialog>
+
+  <br>
+
+  <div>
+    <%= link_to "Torna al Lavoro", @job %> |
+    <%= link_to "Torna alla Lista", jobs_path %>
+  </div>
+</div>

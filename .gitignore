@@ -36,3 +36,7 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+db/locations/
+db/legacy_data/
+lib/tasks/import_legacy.rake
+lib/tasks/populate_locations.rake

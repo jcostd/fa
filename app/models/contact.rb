@@ -11,10 +11,12 @@ class Contact < ApplicationRecord
 
   validates :company_name, presence: true, if: :company?
 
-  before_validation :strip_blanks
+  normalizes :email, with: ->(e) { e.strip.downcase }
+  normalizes :vat_number, :tax_id, with: ->(e) { e.strip.upcase }
+
+  # display_name virtual col
 
   private
-
     def strip_blanks
       self.email = email.strip.downcase if email.present?
       self.vat_number = vat_number.strip.upcase if vat_number.present?

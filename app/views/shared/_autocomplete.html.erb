@@ -1,0 +1,26 @@
+<%#
+  Parametri attesi:
+  - form: l'oggetto form (es. f)
+  - field: il simbolo del campo (es. :location_id, :photographer_id)
+  - label: Il testo della label (es. "Location")
+  - search_url: La rotta REST (es. locations_searches_path)
+  - display_value: Il nome da mostrare (es. job.location&.name)
+%>
+
+<fieldset class="fieldset" data-controller="autocomplete" data-autocomplete-url-value="<%= search_url %>">
+  <legend class="fieldset-legend"><%= label %></legend>
+
+  <div class="dropdown w-full">
+    <%= form.hidden_field field, data: { autocomplete_target: "hidden" } %>
+
+    <input type="text"
+           class="input w-full"
+           value="<%= display_value %>"
+           data-action="input->autocomplete#search"
+           data-autocomplete-target="input"
+           autocomplete="off"
+           placeholder="Cerca o inserisci nuovo...">
+
+    <div data-autocomplete-target="results" class="dropdown-content w-full z-[1]"></div>
+  </div>
+</fieldset>

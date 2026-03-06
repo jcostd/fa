@@ -1,0 +1,175 @@
+<%= turbo_stream_from @job %>
+
+<div id="<%= dom_id(@job) %>" class="max-w-7xl mx-auto pb-12">
+
+  <div class="mb-8">
+    <div class="breadcrumbs text-sm text-base-content/60 mb-2">
+      <ul>
+        <li><%= link_to "Lavori", jobs_path, class: "hover:text-primary transition-colors" %></li>
+        <li class="font-medium text-base-content"><%= @job.display_title %></li>
+      </ul>
+    </div>
+
+    <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-base-content tracking-tight flex items-center gap-3">
+          <%= @job.display_title %>
+          <% if @job.with_video? %>
+            <div class="badge badge-primary badge-outline border-2 font-bold uppercase text-xs">
+              <%= icon("video_camera", classes: "w-3 h-3 mr-1") %> Video
+            </div>
+          <% end %>
+        </h1>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <%= link_to edit_job_path(@job), class: "btn btn-outline border-base-300 hover:border-base-content hover:bg-base-content hover:text-base-100" do %>
+          <%= icon("edit", classes: "w-4 h-4") %>
+          <span class="hidden sm:inline">Modifica</span>
+        <% end %>
+
+        <%= button_to @job, method: :delete, form: { data: { turbo_confirm: "Sei sicuro di voler eliminare questo lavoro?" } }, class: "btn btn-ghost text-error hover:bg-error/10" do %>
+          <%= icon("trash", classes: "w-4 h-4") %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 lg:items-start">
+
+    <div class="lg:col-span-2 flex flex-col gap-6 lg:gap-8">
+
+      <div class="bg-base-100 rounded-2xl border border-base-200 p-5 sm:p-6 flex flex-col sm:flex-row gap-6 sm:gap-12 shadow-sm">
+
+        <div class="flex items-start gap-3">
+          <div class="p-3 bg-base-200/50 rounded-xl text-base-content/70">
+            <%= icon("calendar", classes: "w-6 h-6") %>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-0.5">Data</p>
+            <p class="font-medium text-lg"><%= @job.date.strftime("%d %B %Y") %></p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="p-3 bg-base-200/50 rounded-xl text-base-content/70">
+            <%= icon("clock", classes: "w-6 h-6") %>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-0.5">Orario</p>
+            <p class="font-medium text-lg">
+              <% if @job.start_at.present? %>
+                <%= @job.start_at.strftime("%H:%M") %>
+                <%= "- #{@job.end_at.strftime('%H:%M')}" if @job.end_at.present? %>
+              <% elsif @job.legacy_from_time.present? %>
+                <%= @job.legacy_from_time.strftime("%H:%M") %> <span class="text-xs text-base-content/40 font-normal">(legacy)</span>
+              <% else %>
+                <span class="text-base-content/40 italic">Da definire</span>
+              <% end %>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="p-3 bg-base-200/50 rounded-xl text-base-content/70">
+            <%= icon("location", classes: "w-6 h-6") %>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-0.5">Location</p>
+            <p class="font-medium text-lg"><%= @job.display_location %></p>
+          </div>
+        </div>
+      </div>
+
+      <% if @job.notes.present? %>
+        <div class="prose prose-sm max-w-none text-base-content/80 bg-amber-50/50 dark:bg-amber-900/10 p-5 rounded-2xl border border-amber-200/50 dark:border-amber-700/30">
+          <h3 class="text-amber-800 dark:text-amber-500 font-bold uppercase tracking-wider text-xs mb-2 flex items-center gap-2 mt-0">
+            <%= icon("document_text", classes: "w-4 h-4") %> Note Operative
+          </h3>
+          <%= simple_format(@job.notes) %>
+        </div>
+      <% end %>
+
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-base-content">Squadra e Contatti</h2>
+        </div>
+
+        <ul class="list bg-base-100 rounded-2xl border border-base-200 shadow-sm">
+
+          <li class="p-4 pb-2 text-xs font-bold text-base-content/50 tracking-wider uppercase">Fotografi Assegnati</li>
+          <% if @job.photographers.any? %>
+            <% @job.photographers.each do |photographer| %>
+              <li class="list-row items-center">
+                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                  <%= photographer.display_name.first(2).upcase %>
+                </div>
+                <div class="flex-1">
+                  <div class="font-semibold"><%= photographer.display_name %></div>
+                  <div class="text-xs text-base-content/60"><%= photographer.phone.presence || "Nessun telefono" %></div>
+                </div>
+              </li>
+            <% end %>
+          <% else %>
+            <li class="list-row text-sm text-error italic px-4 py-3">Nessun fotografo assegnato.</li>
+          <% end %>
+
+          <% if @job.clients.any? %>
+            <li class="p-4 pb-2 text-xs font-bold text-base-content/50 tracking-wider uppercase border-t border-base-200 mt-2">Clienti</li>
+            <% @job.clients.each do |client| %>
+              <li class="list-row items-center">
+                <div class="w-10 h-10 rounded-full bg-base-200 flex items-center justify-center text-base-content/60 font-bold">
+                  <%= client.display_name.first.upcase %>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium"><%= client.display_name %></div>
+                </div>
+              </li>
+            <% end %>
+          <% end %>
+
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="lg:col-span-1 flex flex-col gap-6 lg:sticky lg:top-6">
+
+      <div class="bg-base-100 rounded-2xl border border-base-200 p-5 shadow-sm">
+        <h3 class="text-sm font-bold text-base-content/80 mb-4 uppercase tracking-wider">Dettagli di Sistema</h3>
+
+        <div class="flex flex-col gap-3 text-sm">
+          <div class="flex justify-between items-center pb-2 border-b border-base-200">
+            <span class="text-base-content/60">ID Lavoro</span>
+            <span class="font-mono bg-base-200 px-2 py-0.5 rounded text-xs">#<%= @job.id %></span>
+          </div>
+          <div class="flex justify-between items-center pb-2 border-b border-base-200">
+            <span class="text-base-content/60">Creato il</span>
+            <span class="font-medium"><%= @job.created_at.strftime("%d/%m/%Y") %></span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-base-content/60">Ultima modifica</span>
+            <span class="font-medium"><%= time_ago_in_words(@job.updated_at) %> fa</span>
+          </div>
+        </div>
+      </div>
+
+      <% if @job.legacy_data.present? && @job.legacy_data.keys.any? %>
+        <div class="collapse collapse-arrow bg-base-100 border border-base-200 shadow-sm rounded-2xl">
+          <input type="checkbox" />
+          <div class="collapse-title text-sm font-bold text-base-content/80 uppercase tracking-wider flex items-center gap-2">
+            <%= icon("archive_box", classes: "w-4 h-4 text-warning") %>
+            Dati Legacy (JSON)
+          </div>
+          <div class="collapse-content">
+            <div class="bg-base-200 rounded-box p-3 overflow-x-auto text-xs font-mono text-base-content/70">
+              <pre><code><%= JSON.pretty_generate(@job.legacy_data) %></code></pre>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+    </div>
+
+  </div>
+</div>
