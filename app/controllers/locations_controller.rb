@@ -6,8 +6,7 @@ class LocationsController < ApplicationController
   end
 
   def show
-    # Carichiamo i lavori associati a questa location
-    @jobs = Job.where(location_id: @location.id).order(date: :desc)
+    @jobs = @location.jobs.order(date: :desc)
   end
 
   def new
@@ -17,16 +16,14 @@ class LocationsController < ApplicationController
   def create
     @location = Location.new(location_params)
 
-    if @location.save
-      respond_to do |format|
-        if params[:modal_id].present?
-          format.turbo_stream
-        else
-          format.html { redirect_to @location, notice: "Location creata." }
-        end
+    respond_to do |format|
+      if @location.save
+        format.turbo_stream
+        format.html { redirect_to @location, notice: "Location creata." }
+      else
+        format.turbo_stream { render :new, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_entity }
       end
-    else
-      render :new, status: :unprocessable_entity
     end
   end
 
@@ -52,6 +49,6 @@ class LocationsController < ApplicationController
     end
 
     def location_params
-      params.require(:location).permit(:name, :address, :city, :zip) # Aggiungi i campi reali del tuo DB
+      params.require(:location).permit(:name, :district)
     end
 end

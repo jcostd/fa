@@ -1,16 +1,35 @@
-<% if params[:wrapper_id].present? %>
+<% unique_key = (Time.now.to_f * 1000).to_i %>
+
+<%# Caso 1: Aggiunta alla lista multipla (Tappe del Lavoro) %>
+<% if params[:target_list_id].present? %>
+  <%= turbo_stream.append params[:target_list_id] do %>
+    <div class="flex items-center gap-2 p-2 bg-base-200 rounded-box border border-base-300 participation-row">
+      <%# --- Nested Attributes per JobLocation --- %>
+      <input type="hidden" name="job[job_locations_attributes][<%= unique_key %>][location_id]" value="<%= @location.id %>">
+      <input type="hidden" name="job[job_locations_attributes][<%= unique_key %>][_destroy]" value="false">
+
+      <%# Icona per distinguere visivamente le tappe %>
+      <div class="w-8 h-8 rounded-full bg-base-300 flex items-center justify-center shrink-0">
+        <%= icon("location", classes: "w-4 h-4 opacity-70") %>
+      </div>
+
+      <div class="font-bold flex-1 truncate"><%= @location.name %></div>
+
+      <div class="flex-1">
+        <%# Opzionale: Se il modello JobLocation ha un campo "notes", puoi usarlo qui %>
+        <input type="text" name="job[job_locations_attributes][<%= unique_key %>][notes]" class="input input-sm w-full" placeholder="Note (es. Ritrovo)">
+      </div>
+
+      <button type="button" data-action="click->multi-autocomplete#removeRow" class="btn btn-sm btn-ghost text-error">X</button>
+    </div>
+  <% end %>
+
+  <%# Caso 2: (Opzionale) Mantieni il vecchio replace per eventuali singoli autocomplete sparsi per il sito %>
+<% elsif params[:wrapper_id].present? %>
   <%= turbo_stream.replace params[:wrapper_id] do %>
     <div id="<%= params[:wrapper_id] %>" class="dropdown w-full">
       <input type="hidden" name="<%= params[:field_name] %>" value="<%= @location.id %>" data-autocomplete-target="hidden">
-
-      <input type="text"
-             class="input w-full"
-             value="<%= @location.name %>"
-             data-action="input->autocomplete#search"
-             data-autocomplete-target="input"
-             autocomplete="off"
-             placeholder="Cerca o digita per creare...">
-
+      <input type="text" class="input w-full" value="<%= @location.name %>" data-action="input->autocomplete#search" data-autocomplete-target="input" autocomplete="off">
       <div data-autocomplete-target="results" class="dropdown-content w-full z-[1]"></div>
     </div>
   <% end %>

@@ -43,15 +43,13 @@
     </label>
   </fieldset>
 
-  <%= render "shared/autocomplete",
+  <%= render "shared/job_location_builder",
              form: form,
-             field: :location_id,
-             label: "Location",
+             label: "Tappe / Locations",
              search_url: locations_searches_path,
-             display_value: job.location&.name,
              modal_id: "new_location_modal",
-             input_id: "modal_location_name",
-             wrapper_id: "location_autocomplete_inputs" %>
+             target_list_id: "locations_list_target",
+             input_id: "modal_location_name" %>
 
   <%= render "shared/participation_builder",
              form: form,
@@ -108,9 +106,8 @@
   <%= render "locations/form",
              location: Location.new,
              modal_id: "new_location_modal",
-             wrapper_id: "location_autocomplete_inputs",
-             field_name: "job[location_id]",
-             input_id: "modal_location_name" %>
+             target_list_id: "locations_list_target",
+             role: "location" %>
 <% end %>
 
 <%= render layout: "shared/modal", locals: { id: "new_photographer_modal", title: "Nuovo Fotografo" } do %>

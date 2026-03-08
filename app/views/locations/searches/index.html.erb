@@ -1,18 +1,31 @@
-<%= render layout: "layouts/autocomplete_results", locals: { query: params[:query], js_controller: "autocomplete" } do %>
-
-  <% if @locations.any? %>
+<% if @locations.any? %>
+  <ul class="menu bg-base-200 w-full rounded-box">
     <% @locations.each do |location| %>
       <li>
-        <a class="cursor-pointer"
-           data-action="click->autocomplete#select"
+        <a href="#"
+           data-action="click->multi-autocomplete#select"
            data-id="<%= location.id %>"
-           data-name="<%= location.display_name %>">
-          <%= location.display_name %>
+           data-name="<%= location.name %>">
+          <%= location.name %>
         </a>
       </li>
     <% end %>
-  <% else %>
-    <li class="disabled"><a class="text-base-content/50 italic">Nessun luogo trovato</a></li>
-  <% end %>
 
+    <%# --- Pulsante Crea Nuovo --- %>
+    <li class="border-t border-base-300 mt-2">
+      <a href="#" class="text-primary font-bold" data-action="click->multi-autocomplete#openModal">
+        <%= icon("plus", classes: "w-4 h-4") %> Nuova Location
+      </a>
+    </li>
+  </ul>
+
+<% else %>
+  <ul class="menu bg-base-200 w-full rounded-box">
+    <li><span class="text-base-content/50">Nessuna location trovata.</span></li>
+    <li class="border-t border-base-300 mt-2">
+      <a href="#" class="text-primary font-bold" data-action="click->multi-autocomplete#openModal">
+        <%= icon("plus", classes: "w-4 h-4") %> Nuova Location
+      </a>
+    </li>
+  </ul>
 <% end %>

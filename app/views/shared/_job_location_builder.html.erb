@@ -1,0 +1,49 @@
+<%#
+  Parametri attesi:
+  - form: l'oggetto form del Job (es. f)
+  - label: "Tappe / Locations"
+  - search_url: locations_searches_path
+%>
+<fieldset class="fieldset" data-controller="multi-autocomplete" data-multi-autocomplete-url-value="<%= search_url %>" data-modal-id="<%= local_assigns[:modal_id] %>" data-input-id="<%= local_assigns[:input_id] %>">
+  <legend class="fieldset-legend"><%= label %></legend>
+
+  <div id="<%= local_assigns[:target_list_id] || 'job-locations-list' %>" data-multi-autocomplete-target="selectedContainer" class="flex flex-col gap-2 mb-4">
+
+    <%# Ciclo sulle tappe già esistenti (in fase di Edit) %>
+    <%= form.fields_for :job_locations do |jl_form| %>
+      <div class="flex items-center gap-2 p-2 bg-base-200 rounded-box border border-base-300 participation-row">
+        <%= jl_form.hidden_field :location_id %>
+        <%= jl_form.hidden_field :_destroy, class: "destroy-flag" %>
+
+        <%# Qui potremmo aggiungere un campo :position nascosto in futuro per l'ordinamento (drag & drop) %>
+
+        <div class="font-bold flex-1 truncate"><%= jl_form.object.location.display_name %></div>
+
+        <button type="button" data-action="click->multi-autocomplete#removeRow" class="btn btn-sm btn-ghost text-error">X</button>
+      </div>
+    <% end %>
+  </div>
+
+  <%# INPUT DI RICERCA %>
+  <div class="dropdown w-full">
+    <input type="text"
+           class="input w-full"
+           data-action="input->multi-autocomplete#search"
+           data-multi-autocomplete-target="input"
+           autocomplete="off"
+           placeholder="Cerca o aggiungi nuova tappa...">
+    <div data-multi-autocomplete-target="results" class="dropdown-content w-full z-[1]"></div>
+  </div>
+
+  <%# TEMPLATE PER LE NUOVE TAPPE AGGIUNTE VIA JS %>
+  <template data-multi-autocomplete-target="badgeTemplate">
+    <div class="flex items-center gap-2 p-2 bg-base-200 rounded-box border border-base-300 participation-row">
+      <input type="hidden" name="<%= form.object_name %>[job_locations_attributes][NEW_RECORD][location_id]" value="TEMPLATE_ID">
+      <input type="hidden" name="<%= form.object_name %>[job_locations_attributes][NEW_RECORD][_destroy]" value="0">
+
+      <div class="font-bold flex-1 truncate">TEMPLATE_NAME</div>
+
+      <button type="button" data-action="click->multi-autocomplete#removeRow" class="btn btn-sm btn-ghost text-error">X</button>
+    </div>
+  </template>
+</fieldset>

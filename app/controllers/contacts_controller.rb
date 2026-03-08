@@ -15,8 +15,8 @@ class ContactsController < ApplicationController
 
   def show
     @participations = @contact.participations
-                              .includes(job: :location)
-                              .order("jobs.date DESC")
+                        .includes(job: :locations)
+                        .order("jobs.date DESC")
   end
 
   def new
@@ -26,16 +26,14 @@ class ContactsController < ApplicationController
   def create
     @contact = Contact.new(contact_params)
 
-    if @contact.save
-      respond_to do |format|
-        if params[:modal_id].present?
-          format.turbo_stream
-        else
-          format.html { redirect_to @contact, notice: "Contatto aggiunto alla rubrica." }
-        end
+    respond_to do |format|
+      if @contact.save
+        format.turbo_stream
+        format.html { redirect_to @contact, notice: "Contatto aggiunto alla rubrica." }
+      else
+        format.turbo_stream { render :new, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_entity }
       end
-    else
-      render :new, status: :unprocessable_entity
     end
   end
 

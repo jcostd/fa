@@ -1,0 +1,8 @@
+<%= turbo_stream.replace "#{params[:modal_id]}_form" do %>
+  <%= render "contacts/form",
+	     contact: @contact,
+	     url: contacts_path,
+             modal_id: params[:modal_id],
+             target_list_id: params[:target_list_id],
+             role: params[:role] %>
+<% end %>

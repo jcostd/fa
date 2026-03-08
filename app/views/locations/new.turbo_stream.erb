@@ -1,0 +1,6 @@
+<%= turbo_stream.replace "#{params[:modal_id]}_form" do %>
+  <%= render "locations/form",
+	     location: @location,
+	     modal_id: params[:modal_id],
+	     target_list_id: params[:target_list_id] %>
+<% end %>

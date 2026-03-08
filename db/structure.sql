@@ -49,11 +49,7 @@ CREATE TRIGGER contacts_au AFTER UPDATE ON contacts BEGIN
         INSERT INTO contacts_fts(rowid, first_name, last_name, known_as, company_name, email, phone, vat_number, tax_id, notes)
         VALUES (new.id, new.first_name, new.last_name, new.known_as, new.company_name, new.email, new.phone, new.vat_number, new.tax_id, new.notes);
       END;
-CREATE TABLE IF NOT EXISTS "jobs" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "date" date NOT NULL, "start_at" datetime(6), "end_at" datetime(6), "description" text, "notes" text, "with_video" boolean DEFAULT FALSE NOT NULL, "location_id" integer, "legacy_data" json DEFAULT '{}', "display_title" varchar GENERATED ALWAYS AS (COALESCE(NULLIF(TRIM(description), ''), 'Servizio del ' || strftime('%d/%m/%Y', date))) VIRTUAL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_e1588fa548"
-FOREIGN KEY ("location_id")
-  REFERENCES "locations" ("id")
-);
-CREATE INDEX "index_jobs_on_location_id" ON "jobs" ("location_id") /*application='Fa'*/;
+CREATE TABLE IF NOT EXISTS "jobs" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "date" date NOT NULL, "start_at" datetime(6), "end_at" datetime(6), "description" text, "notes" text, "with_video" boolean DEFAULT FALSE NOT NULL, "legacy_data" json DEFAULT '{}', "display_title" varchar GENERATED ALWAYS AS (COALESCE(NULLIF(TRIM(description), ''), 'Servizio del ' || strftime('%d/%m/%Y', date))) VIRTUAL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL);
 CREATE INDEX "index_jobs_on_date" ON "jobs" ("date") /*application='Fa'*/;
 CREATE INDEX "index_jobs_on_with_video" ON "jobs" ("with_video") /*application='Fa'*/;
 CREATE VIRTUAL TABLE jobs_fts USING fts5 (description, notes, legacy_data, content='jobs', content_rowid='id')
@@ -115,7 +111,18 @@ CREATE TRIGGER participations_au AFTER UPDATE ON participations BEGIN
         INSERT INTO participations_fts(rowid, title, role)
         VALUES (new.id, new.title, new.role);
       END;
+CREATE TABLE IF NOT EXISTS "job_locations" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "job_id" integer NOT NULL, "location_id" integer NOT NULL, "position" integer DEFAULT 1 NOT NULL, "note" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_cafc1083d9"
+FOREIGN KEY ("job_id")
+  REFERENCES "jobs" ("id")
+, CONSTRAINT "fk_rails_9186021924"
+FOREIGN KEY ("location_id")
+  REFERENCES "locations" ("id")
+);
+CREATE INDEX "index_job_locations_on_job_id" ON "job_locations" ("job_id") /*application='Fa'*/;
+CREATE INDEX "index_job_locations_on_location_id" ON "job_locations" ("location_id") /*application='Fa'*/;
+CREATE UNIQUE INDEX "index_job_locations_on_job_id_and_position" ON "job_locations" ("job_id", "position") /*application='Fa'*/;
 INSERT INTO "schema_migrations" (version) VALUES
+('20260308101847'),
 ('20260306183944'),
 ('20260228234330'),
 ('20260228234329'),

@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  job: one
+  location: one
+  position: 1
+  note: MyString
+
+two:
+  job: two
+  location: two
+  position: 1
+  note: MyString

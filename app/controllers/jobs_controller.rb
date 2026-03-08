@@ -3,8 +3,7 @@ class JobsController < ApplicationController
 
   # GET /jobs
   def index
-    # Precarichiamo sia le location che le partecipazioni con i contatti
-    base_query = Job.includes(:location, participations: :contact)
+    base_query = Job.includes(:locations, participations: :contact)
 
     @jobs = case params[:filter]
     when "future"
@@ -64,13 +63,20 @@ class JobsController < ApplicationController
 
   private
     def set_job
-      @job = Job.includes(:location, participations: :contact).find(params[:id])
+      @job = Job.includes(:locations, participations: :contact).find(params[:id])
     end
 
     def job_params
       params.require(:job).permit(
         :description, :notes, :date, :start_at, :end_at, :with_video,
-        :location_id, :legacy_location, :from_time, :to_time,
+
+        # legacy
+        :legacy_location_text, :from_time, :to_time,
+
+        # locations
+        job_locations_attributes: [ :id, :location_id, :position, :_destroy ],
+
+        # participations
         participations_attributes: [ :id, :contact_id, :role, :title, :_destroy ]
       )
     end

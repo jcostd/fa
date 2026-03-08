@@ -3,7 +3,10 @@ class Job < ApplicationRecord
 
   broadcasts_refreshes          # turbo
 
-  belongs_to :location, optional: true
+  has_many :job_locations, dependent: :destroy
+  has_many :locations, through: :job_locations
+
+  accepts_nested_attributes_for :job_locations, allow_destroy: true
 
   has_many :participations, dependent: :destroy
   has_many :contacts, through: :participations
@@ -24,7 +27,7 @@ class Job < ApplicationRecord
   scope :with_video, -> { where(with_video: true) }
   scope :recent, -> { order(date: :desc) }
 
-  json_accessor :legacy_data, :from_time, :to_time, :legacy_location
+  json_accessor :legacy_data, :from_time, :to_time, :legacy_location_text
 
   def legacy_from_time
     return nil if from_time.blank?
@@ -37,9 +40,9 @@ class Job < ApplicationRecord
   end
 
   def display_location
-    return location.name if location_id.present?
+    return locations.map(&:name).join(" - ") if locations.any?
 
-    legacy_location.presence || "Location sconosciuta"
+    legacy_location_text.presence || "Location sconosciuta"
   end
 
   def self.global_search(query)
@@ -48,9 +51,9 @@ class Job < ApplicationRecord
     # 1. Cerca nei Job (descrizione, note)
     job_ids = search_text(query).pluck(:id)
 
-    # 2. Cerca nelle Locations
+    # 2. Cerca nelle Locations (AGGIORNATO: Usa la tabella ponte)
     loc_ids = Location.search_text(query).select(:id)
-    job_ids_from_loc = where(location_id: loc_ids).pluck(:id)
+    job_ids_from_loc = joins(:job_locations).where(job_locations: { location_id: loc_ids }).pluck(:id)
 
     # 3. Cerca nei Contatti (nome, azienda, p.iva)
     contact_ids = Contact.search_text(query).select(:id)

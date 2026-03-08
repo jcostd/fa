@@ -12,8 +12,6 @@ class CreateJobs < ActiveRecord::Migration[8.1]
       # Flag attivi
       t.boolean :with_video, null: false, default: false
 
-      t.references :location, foreign_key: true, null: true
-
       # Qui dentro ci andrà {"colour": true, "digital": true, "old_code": "12345"}
       t.json :legacy_data, default: {}
 
