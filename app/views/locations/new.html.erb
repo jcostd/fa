@@ -1,0 +1,17 @@
+<%= turbo_frame_tag "modal" do %>
+  <dialog class="modal" data-controller="dialog" data-action="close->dialog#remove">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+
+      <h3 class="font-bold text-lg mb-6">Nuova Location</h3>
+
+      <%= render "form", location: @location %>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+<% end %>

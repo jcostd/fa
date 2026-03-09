@@ -4,8 +4,8 @@
   id: "#{local_assigns[:modal_id]}_form",
   class: "flex flex-col gap-4",
   data: {
-    controller: "contact-form modal-form",
-    action: "turbo:submit-end->modal-form#handleSuccess"
+    controller: "contact-form",
+    turbo_frame: "_top"
   }
 ) do |form| %>
 

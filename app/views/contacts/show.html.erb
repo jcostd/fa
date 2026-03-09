@@ -1,0 +1,68 @@
+<div class="mb-6">
+  <%= link_to "← Torna alla Rubrica", contacts_path, class: "btn btn-sm btn-ghost" %>
+</div>
+
+<div class="flex flex-col sm:flex-row justify-between items-start mb-8 gap-4">
+  <div>
+    <h1 class="text-4xl font-bold"><%= @contact.display_name %></h1>
+    <div class="badge badge-neutral mt-2"><%= @contact.kind == "person" ? "Persona Fisica" : "Azienda/Ente" %></div>
+  </div>
+
+  <%# Bottone Modifica che apre il modale sopra la Show! %>
+  <%= link_to "Modifica Contatto", edit_contact_path(@contact), class: "btn btn-outline", data: { turbo_frame: "modal" } %>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+  <div class="card bg-base-100 shadow-sm border border-base-200">
+    <div class="card-body">
+      <h2 class="card-title text-base-content/70 text-sm uppercase">Recapiti</h2>
+      <p class="text-lg"><strong>Email:</strong> <%= @contact.email.presence || "-" %></p>
+      <p class="text-lg"><strong>Telefono:</strong> <%= @contact.phone.presence || "-" %></p>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm border border-base-200">
+    <div class="card-body">
+      <h2 class="card-title text-base-content/70 text-sm uppercase">Dati Fiscali</h2>
+      <p class="text-lg"><strong>P.IVA:</strong> <%= @contact.vat_number.presence || "-" %></p>
+      <p class="text-lg"><strong>Cod. Fiscale:</strong> <%= @contact.tax_id.presence || "-" %></p>
+    </div>
+  </div>
+</div>
+
+<h2 class="text-2xl font-bold mb-4">Storico Lavori (<%= @participations.count %>)</h2>
+
+<div class="overflow-x-auto bg-base-100 shadow-sm rounded-box border border-base-200">
+  <table class="table w-full">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Lavoro</th>
+        <th>Ruolo</th>
+        <th>Veste (Titolo)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if @participations.any? %>
+        <% @participations.each do |participation| %>
+          <tr class="hover">
+            <td class="whitespace-nowrap"><%= l(participation.job.date, format: :short) rescue participation.job.date %></td>
+            <td>
+              <%= link_to participation.job.display_title, job_path(participation.job), class: "link link-primary font-bold" %>
+            </td>
+            <td>
+              <div class="badge badge-ghost"><%= participation.role.humanize %></div>
+            </td>
+            <td class="italic"><%= participation.title.presence || "-" %></td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td colspan="4" class="text-center py-6 text-base-content/50 italic">
+            Nessun lavoro registrato per questo contatto.
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

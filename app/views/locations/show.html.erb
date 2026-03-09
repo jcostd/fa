@@ -1,0 +1,22 @@
+<div class="w-full max-w-3xl mx-auto mt-8">
+  <div class="flex justify-between items-start mb-6">
+    <div>
+      <h1 class="text-4xl font-extrabold"><%= @location.name %></h1>
+      <% if @location.district.present? %>
+        <div class="badge badge-neutral mt-2"><%= @location.district %></div>
+      <% end %>
+    </div>
+
+    <div class="flex gap-2">
+      <%= link_to "Modifica", edit_location_path(@location), class: "btn btn-outline", data: { turbo_frame: "modal" } %>
+      <%= link_to "Torna all'Indice", locations_path, class: "btn btn-ghost" %>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-xl border border-base-200 mt-6">
+    <div class="card-body">
+      <h2 class="card-title text-base-content/70">Dettagli</h2>
+      <p class="text-sm">In futuro qui potremo inserire la mappa, le note fisse o lo storico dei Job associati a questa location.</p>
+    </div>
+  </div>
+</div>

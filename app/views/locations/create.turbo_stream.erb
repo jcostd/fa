@@ -1,9 +1,13 @@
 <% unique_key = (Time.now.to_f * 1000).to_i %>
 
-<%# Caso 1: Aggiunta alla lista multipla (Tappe del Lavoro) %>
+<%# 1. SVUOTIAMO IL MODALE: Questo lo fa sparire non appena premi "Salva" %>
+<%= turbo_stream.update "modal", "" %>
+
+<%# 2. Caso: Aggiunta alla lista multipla (Tappe del Lavoro) %>
 <% if params[:target_list_id].present? %>
   <%= turbo_stream.append params[:target_list_id] do %>
     <div class="flex items-center gap-2 p-2 bg-base-200 rounded-box border border-base-300 participation-row">
+
       <%# --- Nested Attributes per JobLocation --- %>
       <input type="hidden" name="job[job_locations_attributes][<%= unique_key %>][location_id]" value="<%= @location.id %>">
       <input type="hidden" name="job[job_locations_attributes][<%= unique_key %>][_destroy]" value="false">
@@ -13,18 +17,21 @@
         <%= icon("location", classes: "w-4 h-4 opacity-70") %>
       </div>
 
-      <div class="font-bold flex-1 truncate"><%= @location.name %></div>
+      <div class="font-bold flex-1 truncate">
+        <%= @location.name %>
+        <% if @location.district.present? %><span class="text-xs font-normal text-base-content/60">(<%= @location.district %>)</span><% end %>
+      </div>
 
       <div class="flex-1">
-        <%# Opzionale: Se il modello JobLocation ha un campo "notes", puoi usarlo qui %>
-        <input type="text" name="job[job_locations_attributes][<%= unique_key %>][notes]" class="input input-sm w-full" placeholder="Note (es. Ritrovo)">
+        <%# ATTENZIONE: cambiato [notes] in [note] per allinearlo al DB %>
+        <input type="text" name="job[job_locations_attributes][<%= unique_key %>][note]" class="input input-sm w-full" placeholder="Note (es. Ritrovo)">
       </div>
 
       <button type="button" data-action="click->multi-autocomplete#removeRow" class="btn btn-sm btn-ghost text-error">X</button>
     </div>
   <% end %>
 
-  <%# Caso 2: (Opzionale) Mantieni il vecchio replace per eventuali singoli autocomplete sparsi per il sito %>
+  <%# 3. Caso (Opzionale): Singolo autocomplete sparso per il sito %>
 <% elsif params[:wrapper_id].present? %>
   <%= turbo_stream.replace params[:wrapper_id] do %>
     <div id="<%= params[:wrapper_id] %>" class="dropdown w-full">

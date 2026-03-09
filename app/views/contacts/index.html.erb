@@ -1,0 +1,67 @@
+<div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+  <h1 class="text-3xl font-bold">Rubrica Contatti</h1>
+
+  <%# Bottone NUOVO che apre il modale %>
+  <%= link_to "Nuovo Contatto", new_contact_path, class: "btn btn-primary", data: { turbo_frame: "modal" } %>
+</div>
+
+<%# Filtri (sfruttiamo i params che hai nel controller) %>
+<div class="tabs tabs-boxed mb-6 inline-block bg-base-200">
+  <%= link_to "Tutti", contacts_path, class: "tab #{'tab-active' unless params[:filter].present?}" %>
+  <%= link_to "Persone", contacts_path(filter: "person"), class: "tab #{'tab-active' if params[:filter] == 'person'}" %>
+  <%= link_to "Aziende", contacts_path(filter: "company"), class: "tab #{'tab-active' if params[:filter] == 'company'}" %>
+</div>
+
+<%# Tabella Contatti %>
+<div class="overflow-x-auto bg-base-100 shadow-sm rounded-box border border-base-200">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr>
+        <th>Nome / Ragione Sociale</th>
+        <th>Recapiti</th>
+        <th>Dati Fiscali</th>
+        <th class="text-right">Azioni</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if @contacts.any? %>
+        <% @contacts.each do |contact| %>
+          <tr>
+            <td>
+              <div class="font-bold text-lg"><%= contact.display_name %></div>
+              <div class="text-sm opacity-60"><%= contact.kind == "person" ? "Persona Fisica" : "Azienda/Ente" %></div>
+            </td>
+            <td>
+              <div><%= contact.email.presence || '<span class="opacity-30">N/A</span>'.html_safe %></div>
+              <div><%= contact.phone.presence || '<span class="opacity-30">N/A</span>'.html_safe %></div>
+            </td>
+            <td class="text-sm">
+              <div>P.IVA: <%= contact.vat_number.presence || "-" %></div>
+              <div>C.F.: <%= contact.tax_id.presence || "-" %></div>
+            </td>
+            <td class="text-right">
+              <div class="flex justify-end gap-2">
+                <%# Pagina Intera: Show %>
+                <%= link_to "Scheda", contact_path(contact), class: "btn btn-sm btn-ghost" %>
+
+                <%# Modale: Edit %>
+                <%= link_to "Modifica", edit_contact_path(contact), class: "btn btn-sm btn-outline", data: { turbo_frame: "modal" } %>
+
+                <%# Morphing: Delete %>
+                <%= button_to "Elimina", contact_path(contact), method: :delete, class: "btn btn-sm btn-error btn-outline", form: { data: { turbo_confirm: "Sei sicuro di voler eliminare #{contact.display_name}?" } } %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td colspan="4" class="text-center py-8 text-base-content/50 italic">
+            Nessun contatto trovato.
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<%== @pagy.series_nav %>

@@ -120,7 +120,7 @@ FOREIGN KEY ("location_id")
 );
 CREATE INDEX "index_job_locations_on_job_id" ON "job_locations" ("job_id") /*application='Fa'*/;
 CREATE INDEX "index_job_locations_on_location_id" ON "job_locations" ("location_id") /*application='Fa'*/;
-CREATE UNIQUE INDEX "index_job_locations_on_job_id_and_position" ON "job_locations" ("job_id", "position") /*application='Fa'*/;
+CREATE INDEX "index_job_locations_on_job_id_and_position" ON "job_locations" ("job_id", "position") /*application='Fa'*/;
 INSERT INTO "schema_migrations" (version) VALUES
 ('20260308101847'),
 ('20260306183944'),

@@ -74,7 +74,7 @@ class JobsController < ApplicationController
         :legacy_location_text, :from_time, :to_time,
 
         # locations
-        job_locations_attributes: [ :id, :location_id, :position, :_destroy ],
+        job_locations_attributes: [ :id, :location_id, :position, :note, :_destroy ],
 
         # participations
         participations_attributes: [ :id, :contact_id, :role, :title, :_destroy ]

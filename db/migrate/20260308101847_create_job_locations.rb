@@ -10,6 +10,6 @@ class CreateJobLocations < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :job_locations, [ :job_id, :position ], unique: true
+    add_index :job_locations, [ :job_id, :position ]
   end
 end

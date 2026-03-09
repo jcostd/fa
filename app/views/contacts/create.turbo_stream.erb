@@ -1,17 +1,22 @@
-<% unique_key = (Time.now.to_f * 1000).to_i %>
+<% if params[:target_list_id].present? %>
+  <% unique_key = (Time.now.to_f * 1000).to_i %>
 
-<%= turbo_stream.append params[:target_list_id] do %>
-  <div class="flex items-center gap-2 p-2 bg-base-200 rounded-box border border-base-300 participation-row">
-    <input type="hidden" name="job[participations_attributes][<%= unique_key %>][contact_id]" value="<%= @contact.id %>">
-    <input type="hidden" name="job[participations_attributes][<%= unique_key %>][role]" value="<%= params[:role] %>">
-    <input type="hidden" name="job[participations_attributes][<%= unique_key %>][_destroy]" value="false">
+  <%= turbo_stream.append params[:target_list_id] do %>
+    <div class="flex items-center gap-2 p-2 bg-base-200 rounded-box border border-base-300 participation-row">
+      <input type="hidden" name="job[participations_attributes][<%= unique_key %>][contact_id]" value="<%= @contact.id %>">
+      <input type="hidden" name="job[participations_attributes][<%= unique_key %>][role]" value="<%= params[:role] %>">
+      <input type="hidden" name="job[participations_attributes][<%= unique_key %>][_destroy]" value="false">
 
-    <div class="font-bold flex-1 truncate"><%= @contact.display_name %></div>
+      <div class="font-bold flex-1 truncate"><%= @contact.display_name %></div>
 
-    <div class="flex-1">
-      <input type="text" name="job[participations_attributes][<%= unique_key %>][title]" class="input input-sm w-full" placeholder="Veste/Titolo">
+      <div class="flex-1">
+        <input type="text" name="job[participations_attributes][<%= unique_key %>][title]" class="input input-sm w-full" placeholder="Veste/Titolo">
+      </div>
+
+      <button type="button" data-action="click->multi-autocomplete#removeRow" class="btn btn-sm btn-ghost text-error">X</button>
     </div>
+  <% end %>
 
-    <button type="button" data-action="click->multi-autocomplete#removeRow" class="btn btn-sm btn-ghost text-error">X</button>
-  </div>
+<% else %>
+  <%= turbo_stream.refresh %>
 <% end %>

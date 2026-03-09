@@ -1,0 +1,16 @@
+<%= turbo_frame_tag "modal" do %>
+  <dialog class="modal" data-controller="dialog" data-action="close->dialog#remove">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg mb-4">Modifica Contatto</h3>
+
+      <%= render "form",
+                 contact: @contact,
+                 url: contact_path(@contact),
+                 html_options: { data: { turbo_frame: "_top" } } %>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+      <button data-action="dialog#close">Chiudi</button>
+    </form>
+  </dialog>
+<% end %>

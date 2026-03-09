@@ -1,0 +1,39 @@
+<div class="w-full max-w-5xl mx-auto mt-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Locations</h1>
+
+    <%# Questo link dice a Turbo: "Prendi l'HTML di questa pagina, ma ficca solo la parte del modale nel frame 'modal'" %>
+    <%= link_to "Nuova Location", new_location_path, class: "btn btn-primary", data: { turbo_frame: "modal" } %>
+  </div>
+
+  <div class="overflow-x-auto bg-base-100 rounded-box shadow-xl border border-base-200">
+    <table class="table table-zebra w-full">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Provincia/Zona</th>
+          <th class="text-right">Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @locations.each do |location| %>
+          <tr class="hover">
+            <td>
+              <div class="font-bold">
+                <%= link_to location.name, location, class: "link link-hover", data: { turbo_frame: "_top" } %>
+              </div>
+            </td>
+            <td><%= location.district.presence || "-" %></td>
+            <td class="text-right flex justify-end gap-2">
+              <%= link_to "Modifica", edit_location_path(location), class: "btn btn-sm btn-ghost", data: { turbo_frame: "modal" } %>
+
+              <%# Tasto elimina con conferma %>
+              <%= button_to "Elimina", location, method: :delete, class: "btn btn-sm btn-ghost text-error", form: { data: { turbo_confirm: "Sei sicuro di voler eliminare questa location?" } } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%== @pagy.series_nav %>
+</div>

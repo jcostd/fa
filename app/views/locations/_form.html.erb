@@ -2,10 +2,7 @@
   model: location,
   id: "#{local_assigns[:modal_id]}_form",
   class: "flex flex-col gap-4",
-  data: {
-    controller: "modal-form",
-    action: "turbo:submit-end->modal-form#handleSuccess"
-  }
+  data: { turbo_frame: "_top" }
 ) do |form| %>
 
   <%# --- Campi nascosti per il routing del modale --- %>
@@ -26,21 +23,15 @@
     </div>
   <% end %>
 
-  <%# --- Campi Location --- %>
+  <%# --- Campi Location (Allineati allo Schema DB) --- %>
   <fieldset class="fieldset">
     <legend class="fieldset-legend">Nome Location *</legend>
-    <%# Usiamo l'input_id per pre-compilare il nome cercato %>
     <%= form.text_field :name, class: "input w-full", id: local_assigns[:input_id] %>
   </fieldset>
 
   <fieldset class="fieldset">
-    <legend class="fieldset-legend">Indirizzo</legend>
-    <%= form.text_field :address, class: "input w-full" %>
-  </fieldset>
-
-  <fieldset class="fieldset">
-    <legend class="fieldset-legend">Città</legend>
-    <%= form.text_field :city, class: "input w-full" %>
+    <legend class="fieldset-legend">Provincia / Zona (District)</legend>
+    <%= form.text_field :district, class: "input w-full" %>
   </fieldset>
 
   <%# --- Azioni Form --- %>
