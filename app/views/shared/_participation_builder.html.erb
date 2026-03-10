@@ -1,8 +1,13 @@
-<fieldset class="fieldset" data-controller="multi-autocomplete" data-multi-autocomplete-url-value="<%= search_url %>" data-modal-id="<%= local_assigns[:modal_id] %>" data-input-id="<%= local_assigns[:input_id] %>">
+<% frame_id = local_assigns[:wrapper_id] || "participation_builder_#{SecureRandom.hex(4)}" %>
+
+<fieldset class="fieldset"
+          data-controller="multi-autocomplete"
+          data-modal-id="<%= local_assigns[:modal_id] %>"
+          data-input-id="<%= local_assigns[:input_id] %>">
+
   <legend class="fieldset-legend"><%= label %></legend>
 
   <div id="<%= local_assigns[:target_list_id] %>" data-multi-autocomplete-target="selectedContainer" class="flex flex-col gap-2 mb-4">
-
     <%= form.fields_for :participations, participations do |p_form| %>
       <div class="flex items-center gap-2 p-2 bg-base-200 rounded-box border border-base-300 participation-row">
         <%= p_form.hidden_field :contact_id %>
@@ -18,22 +23,28 @@
     <% end %>
   </div>
 
-  <%# INPUT DI RICERCA %>
+  <%# INPUT DI RICERCA: Senza tag form! %>
   <div class="dropdown w-full">
     <input type="text"
            class="input w-full"
-           data-action="input->multi-autocomplete#search"
            data-multi-autocomplete-target="input"
+           data-controller="autosubmit"
+           data-action="input->autosubmit#submit keydown.enter->autosubmit#prevent"
+           data-url="<%= search_url %>"
+           data-frame-id="<%= frame_id %>"
            autocomplete="off"
            placeholder="Cerca o aggiungi nuovo...">
-    <div data-multi-autocomplete-target="results" class="dropdown-content w-full z-[1]"></div>
+
+    <%# WRAPPER ANTI-FLICKER %>
+    <div class="dropdown-content w-full z-[1]">
+      <%= turbo_frame_tag frame_id %>
+    </div>
   </div>
 
   <template data-multi-autocomplete-target="badgeTemplate">
     <div class="flex items-center gap-2 p-2 bg-base-200 rounded-box border border-base-300 participation-row">
       <input type="hidden" name="<%= form.object_name %>[participations_attributes][NEW_RECORD][contact_id]" value="TEMPLATE_ID">
       <input type="hidden" name="<%= form.object_name %>[participations_attributes][NEW_RECORD][role]" value="<%= role %>">
-
       <input type="hidden" name="<%= form.object_name %>[participations_attributes][NEW_RECORD][_destroy]" value="0">
 
       <div class="font-bold flex-1 truncate">TEMPLATE_NAME</div>

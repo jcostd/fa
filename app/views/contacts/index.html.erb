@@ -1,67 +1,75 @@
-<div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-  <h1 class="text-3xl font-bold">Rubrica Contatti</h1>
+<div class="max-w-7xl mx-auto pb-12 px-4 sm:px-6 lg:px-8">
 
-  <%# Bottone NUOVO che apre il modale %>
-  <%= link_to "Nuovo Contatto", new_contact_path, class: "btn btn-primary", data: { turbo_frame: "modal" } %>
-</div>
-
-<%# Filtri (sfruttiamo i params che hai nel controller) %>
-<div class="tabs tabs-boxed mb-6 inline-block bg-base-200">
-  <%= link_to "Tutti", contacts_path, class: "tab #{'tab-active' unless params[:filter].present?}" %>
-  <%= link_to "Persone", contacts_path(filter: "person"), class: "tab #{'tab-active' if params[:filter] == 'person'}" %>
-  <%= link_to "Aziende", contacts_path(filter: "company"), class: "tab #{'tab-active' if params[:filter] == 'company'}" %>
-</div>
-
-<%# Tabella Contatti %>
-<div class="overflow-x-auto bg-base-100 shadow-sm rounded-box border border-base-200">
-  <table class="table table-zebra w-full">
-    <thead>
-      <tr>
-        <th>Nome / Ragione Sociale</th>
-        <th>Recapiti</th>
-        <th>Dati Fiscali</th>
-        <th class="text-right">Azioni</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if @contacts.any? %>
-        <% @contacts.each do |contact| %>
-          <tr>
-            <td>
-              <div class="font-bold text-lg"><%= contact.display_name %></div>
-              <div class="text-sm opacity-60"><%= contact.kind == "person" ? "Persona Fisica" : "Azienda/Ente" %></div>
-            </td>
-            <td>
-              <div><%= contact.email.presence || '<span class="opacity-30">N/A</span>'.html_safe %></div>
-              <div><%= contact.phone.presence || '<span class="opacity-30">N/A</span>'.html_safe %></div>
-            </td>
-            <td class="text-sm">
-              <div>P.IVA: <%= contact.vat_number.presence || "-" %></div>
-              <div>C.F.: <%= contact.tax_id.presence || "-" %></div>
-            </td>
-            <td class="text-right">
-              <div class="flex justify-end gap-2">
-                <%# Pagina Intera: Show %>
-                <%= link_to "Scheda", contact_path(contact), class: "btn btn-sm btn-ghost" %>
-
-                <%# Modale: Edit %>
-                <%= link_to "Modifica", edit_contact_path(contact), class: "btn btn-sm btn-outline", data: { turbo_frame: "modal" } %>
-
-                <%# Morphing: Delete %>
-                <%= button_to "Elimina", contact_path(contact), method: :delete, class: "btn btn-sm btn-error btn-outline", form: { data: { turbo_confirm: "Sei sicuro di voler eliminare #{contact.display_name}?" } } %>
-              </div>
-            </td>
-          </tr>
-        <% end %>
-      <% else %>
-        <tr>
-          <td colspan="4" class="text-center py-8 text-base-content/50 italic">
-            Nessun contatto trovato.
-          </td>
-        </tr>
+  <div class="navbar px-0 mt-6 mb-4">
+    <div class="flex-1 items-baseline gap-2">
+      <h1 class="text-3xl font-bold">Contatti</h1>
+      <div class="badge badge-ghost badge-sm"><%= @pagy.count %></div>
+    </div>
+    <div class="flex-none">
+      <%= link_to new_contact_path, class: "btn btn-primary btn-sm gap-2", data: { turbo_frame: "modal" } do %>
+        <%= icon("plus", classes: "size-4") %>
+        <span class="hidden sm:inline">Nuovo Contatto</span>
       <% end %>
-    </tbody>
-  </table>
-</div>
+    </div>
+  </div>
 
-<%== @pagy.series_nav %>
+  <%# 2. TOOLBAR %>
+  <div class="flex flex-col md:flex-row gap-4 mb-6">
+
+    <%= form_with url: contacts_path, method: :get, data: { turbo_frame: "contacts_list", controller: "autosubmit", action: "input->autosubmit#submit" } do |f| %>
+      <%= f.hidden_field :filter, value: params[:filter] if params[:filter].present? %>
+
+      <label class="input input-sm input-bordered flex items-center gap-2">
+	<%= icon("search", classes: "size-4 opacity-50") %>
+	<%= f.text_field :query, value: params[:query], class: "grow", autocomplete: "off" %>
+      </label>
+    <% end %>
+
+    <div role="tablist" class="tabs tabs-boxed tabs-sm w-full md:w-auto bg-base-100 shadow-sm border border-base-200">
+      <a role="tab" class="tab tab-active">Tutti</a>
+      <a role="tab" class="tab">Persone</a>
+      <a role="tab" class="tab">Aziende</a>
+    </div>
+
+    <div class="dropdown dropdown-end md:ml-auto w-full md:w-auto">
+      <div tabindex="0" role="button" class="btn btn-sm btn-ghost w-full justify-between bg-base-100 border-base-200 shadow-sm">
+        <span class="flex items-center gap-2 opacity-70">
+          <%= icon("arrows-up-down", classes: "size-4") %>
+          Più recenti
+        </span>
+      </div>
+      <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1">
+        <li><a class="active">Più recenti</a></li>
+        <li><a>Alfabetico</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <% if @contacts.any? %>
+    <ul class="list bg-base-100 rounded-box shadow-sm border border-base-200 overflow-hidden">
+
+      <li class="p-4 pb-2 text-xs font-semibold uppercase tracking-widest opacity-40 border-b border-base-200">
+        Rubrica
+      </li>
+
+      <%= render @contacts %>
+    </ul>
+  <% else %>
+    <div class="hero bg-base-100 rounded-box shadow-sm border border-base-200 py-16">
+      <div class="hero-content text-center">
+        <div class="max-w-md">
+          <%= icon("users", classes: "size-12 opacity-20 mx-auto mb-4") %>
+          <h2 class="text-xl font-bold">Nessun contatto</h2>
+          <p class="py-4 opacity-60">La tua rubrica è vuota. Inizia ad aggiungere i tuoi clienti o collaboratori.</p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @pagy.pages > 1 %>
+    <div class="mt-8 flex justify-center">
+      <%== @pagy.series_nav %>
+    </div>
+  <% end %>
+
+</div>

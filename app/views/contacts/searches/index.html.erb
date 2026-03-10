@@ -1,9 +1,13 @@
-<%= render layout: "layouts/autocomplete_results", locals: { query: params[:query], js_controller: "multi-autocomplete" } do %>
+<%= render layout: "layouts/autocomplete_results", locals: {
+  query: params[:query],
+  js_controller: "multi-autocomplete",
+  frame_id: params[:frame_id]
+} do %>
 
   <% if @contacts.any? %>
     <% @contacts.each do |contact| %>
       <li>
-        <a class="cursor-pointer"
+        <a class="cursor-pointer active:bg-base-300 active:text-base-content focus:bg-base-200"
            data-action="click->multi-autocomplete#select"
            data-id="<%= contact.id %>"
            data-name="<%= contact.display_name %>">
@@ -12,7 +16,11 @@
       </li>
     <% end %>
   <% else %>
-    <li class="disabled"><a class="text-base-content/50 italic">Nessun contatto trovato</a></li>
+    <li>
+      <span class="text-base-content/50 italic cursor-default pointer-events-none">
+        Nessun contatto trovato
+      </span>
+    </li>
   <% end %>
 
 <% end %>

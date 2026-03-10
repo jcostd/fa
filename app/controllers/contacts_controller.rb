@@ -2,13 +2,7 @@ class ContactsController < ApplicationController
   before_action :set_contact, only: %i[ show edit update destroy ]
 
   def index
-    @contacts = Contact.order(last_name: :asc, first_name: :asc, company_name: :asc)
-
-    if params[:filter] == "person"
-      @contacts = @contacts.person
-    elsif params[:filter] == "company"
-      @contacts = @contacts.company
-    end
+    @contacts = ContactQuery.new(Contact.all, params).resolve
 
     @pagy, @contacts = pagy(@contacts)
   end

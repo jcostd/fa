@@ -1,23 +1,19 @@
-<%#
-  Parametri attesi:
-  - form: l'oggetto form del Job (es. f)
-  - label: "Tappe / Locations"
-  - search_url: locations_searches_path
-%>
-<fieldset class="fieldset" data-controller="multi-autocomplete" data-multi-autocomplete-url-value="<%= search_url %>" data-modal-id="<%= local_assigns[:modal_id] %>" data-input-id="<%= local_assigns[:input_id] %>">
+<% frame_id = local_assigns[:wrapper_id] || "location_builder_#{SecureRandom.hex(4)}" %>
+
+<fieldset class="fieldset"
+          data-controller="multi-autocomplete"
+          data-modal-id="<%= local_assigns[:modal_id] %>"
+          data-input-id="<%= local_assigns[:input_id] %>">
+
   <legend class="fieldset-legend"><%= label %></legend>
 
-  <%# Aggiunto data-controller="sortable" %>
   <div id="<%= local_assigns[:target_list_id] || 'job-locations-list' %>"
        data-multi-autocomplete-target="selectedContainer"
        data-controller="sortable"
        class="flex flex-col gap-2 mb-4">
 
-    <%# Ciclo sulle tappe già esistenti (in fase di Edit) %>
     <%= form.fields_for :job_locations, form.object.job_locations.order(:position) do |jl_form| %>
       <div class="flex items-center gap-2 p-2 bg-base-200 rounded-box border border-base-300 participation-row">
-
-        <%# Maniglione per il drag %>
         <div class="cursor-grab hover:text-primary sortable-handle px-1 text-base-content/30">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -26,33 +22,34 @@
 
         <%= jl_form.hidden_field :location_id %>
         <%= jl_form.hidden_field :_destroy, class: "destroy-flag" %>
-
-        <%# Campo posizione nascosto %>
         <%= jl_form.hidden_field :position, class: "position-input" %>
 
         <div class="font-bold flex-1 truncate"><%= jl_form.object.location.display_name %></div>
-
         <button type="button" data-action="click->multi-autocomplete#removeRow" class="btn btn-sm btn-ghost text-error">X</button>
       </div>
     <% end %>
   </div>
 
-  <%# INPUT DI RICERCA %>
+  <%# INPUT DI RICERCA: Senza tag form! %>
   <div class="dropdown w-full">
     <input type="text"
            class="input w-full"
-           data-action="input->multi-autocomplete#search"
            data-multi-autocomplete-target="input"
+           data-controller="autosubmit"
+           data-action="input->autosubmit#submit keydown.enter->autosubmit#prevent"
+           data-url="<%= search_url %>"
+           data-frame-id="<%= frame_id %>"
            autocomplete="off"
            placeholder="Cerca o aggiungi nuova tappa...">
-    <div data-multi-autocomplete-target="results" class="dropdown-content w-full z-[1]"></div>
+
+    <%# WRAPPER ANTI-FLICKER %>
+    <div class="dropdown-content w-full z-[1]">
+      <%= turbo_frame_tag frame_id %>
+    </div>
   </div>
 
-  <%# TEMPLATE PER LE NUOVE TAPPE AGGIUNTE VIA JS %>
   <template data-multi-autocomplete-target="badgeTemplate">
     <div class="flex items-center gap-2 p-2 bg-base-200 rounded-box border border-base-300 participation-row">
-
-      <%# Maniglione anche nel template %>
       <div class="cursor-grab hover:text-primary sortable-handle px-1 text-base-content/30">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -61,12 +58,9 @@
 
       <input type="hidden" name="<%= form.object_name %>[job_locations_attributes][NEW_RECORD][location_id]" value="TEMPLATE_ID">
       <input type="hidden" name="<%= form.object_name %>[job_locations_attributes][NEW_RECORD][_destroy]" value="0">
-
-      <%# Campo posizione nel template: verrà popolato da Stimulus al momento del drop o dell'inserimento %>
       <input type="hidden" name="<%= form.object_name %>[job_locations_attributes][NEW_RECORD][position]" value="" class="position-input">
 
       <div class="font-bold flex-1 truncate">TEMPLATE_NAME</div>
-
       <button type="button" data-action="click->multi-autocomplete#removeRow" class="btn btn-sm btn-ghost text-error">X</button>
     </div>
   </template>

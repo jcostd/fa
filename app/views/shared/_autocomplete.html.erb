@@ -1,18 +1,40 @@
-<fieldset class="fieldset" data-controller="autocomplete" data-autocomplete-url-value="<%= search_url %>" data-modal-id="<%= local_assigns[:modal_id] %>" data-input-id="<%= local_assigns[:input_id] %>">
+<%#
+Generiamo un ID univoco per il frame.
+In questo modo possiamo avere 10 autocomplete nella pagina senza che si sovrascrivano a vicenda.
+%>
+<% frame_id = local_assigns[:wrapper_id] || "autocomplete_#{SecureRandom.hex(4)}" %>
+
+<fieldset class="fieldset"
+          data-controller="autocomplete"
+          data-modal-id="<%= local_assigns[:modal_id] %>"
+          data-input-id="<%= local_assigns[:input_id] %>">
+
   <legend class="fieldset-legend"><%= label %></legend>
 
-  <%# Aggiunto l'id dinamico qui sotto %>
-  <div id="<%= local_assigns[:wrapper_id] %>" class="dropdown w-full">
+  <div class="dropdown w-full">
+    <%# Campo nascosto gestito dal controller JS (riceve l'ID selezionato) %>
     <%= form.hidden_field field, data: { autocomplete_target: "hidden" } %>
 
-    <input type="text"
-           class="input w-full"
-           value="<%= display_value %>"
-           data-action="input->autocomplete#search"
-           data-autocomplete-target="input"
-           autocomplete="off"
-           placeholder="Cerca o digita per creare...">
+    <%# Form Turbo che lancia la ricerca via autosubmit %>
+    <%= form_with url: search_url, method: :get,
+		  data: {
+		    turbo_frame: frame_id,
+		    controller: "autosubmit",
+		    action: "input->autosubmit#submit"
+		  } do |f| %>
 
-    <div data-autocomplete-target="results" class="dropdown-content w-full z-[1]"></div>
+      <%# Passiamo il frame_id al server, così sa in quale frame incapsulare la risposta %>
+      <%= f.hidden_field :frame_id, value: frame_id %>
+
+      <%= f.text_field :query,
+       class: "input w-full",
+       value: display_value,
+       data: { autocomplete_target: "input" },
+       autocomplete: "off",
+       placeholder: "Cerca o digita per creare..." %>
+    <% end %>
+
+    <%# Contenitore dove Turbo inietterà in automatico i risultati della ricerca %>
+    <%= turbo_frame_tag frame_id, class: "dropdown-content w-full z-[1]" %>
   </div>
 </fieldset>

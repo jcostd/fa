@@ -5,21 +5,17 @@
 
   <div class="modal-box p-0 max-w-3xl w-full h-[80vh] max-h-[650px] flex flex-col bg-base-100 rounded-xl overflow-hidden shadow-2xl">
 
-    <%# HEADER: Barra di ricerca gigante %>
+    <%# HEADER: Barra di ricerca gigante (NIENTE PIÙ FORM!) %>
     <div class="border-b border-base-200 bg-base-100 p-4 sticky top-0 z-10 flex items-center gap-4">
       <%= icon("search", classes: "w-6 h-6 text-primary") %>
 
-      <%= form_with url: searches_path, method: :get, class: "flex-1", data: { turbo_frame: "omnibox_results", omnibox_target: "form" } do |f| %>
-        <%= f.text_field :query,
-               class: "w-full bg-transparent text-xl font-medium focus:outline-none placeholder-base-content/40",
-               placeholder: "Cerca lavori, contatti, posizioni...",
-               autocomplete: "off",
-               data: {
-		 omnibox_target: "input",
-		 # La combo perfetta: search per la digitazione, navigate per le frecce/invio
-		 action: "input->omnibox#search keydown->omnibox#navigate"
-               } %>
-      <% end %>
+      <input type="text"
+             class="flex-1 w-full bg-transparent text-xl font-medium focus:outline-none placeholder-base-content/40"
+             placeholder="Cerca lavori, contatti, posizioni..."
+             autocomplete="off"
+             data-omnibox-target="input"
+             data-url="<%= searches_path %>"
+             data-action="input->omnibox#search keydown->omnibox#navigate">
 
       <%# La "X" ora chiama clearInput per svuotare il campo e i risultati %>
       <button type="button" class="btn btn-sm btn-circle btn-ghost text-base-content/50 hover:text-base-content" data-action="click->omnibox#clearInput">✕</button>

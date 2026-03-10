@@ -1,13 +1,6 @@
-<%#
-  Parametri attesi:
-  - form: l'oggetto form (es. f)
-  - field: il prefisso dell'array (es. :photographer_ids)
-  - label: Il testo della label (es. "Fotografi")
-  - search_url: La rotta REST (es. photographers_searches_path)
-  - selected_items: Collezione di oggetti già associati (es. job.photographers)
-%>
+<% frame_id = local_assigns[:wrapper_id] || "multi_autocomplete_#{SecureRandom.hex(4)}" %>
 
-<fieldset class="fieldset" data-controller="multi-autocomplete" data-multi-autocomplete-url-value="<%= search_url %>">
+<fieldset class="fieldset" data-controller="multi-autocomplete">
   <legend class="fieldset-legend"><%= label %></legend>
 
   <%# Contenitore dei Badge Selezionati %>
@@ -15,22 +8,31 @@
     <% selected_items.each do |item| %>
       <div class="badge badge-primary gap-2" data-id="<%= item.id %>">
         <%= item.respond_to?(:display_name) ? item.display_name : item.name %>
-        <button type="button" data-action="click->multi-autocomplete#remove" class="hover:text-error text-xs font-bold">X</button>
+        <button type="button" data-action="click->multi-autocomplete#removeRow" class="hover:text-error text-xs font-bold">X</button>
         <input type="hidden" name="<%= form.object_name %>[<%= field %>][]" value="<%= item.id %>">
       </div>
     <% end %>
   </div>
 
-  <%# Input di Ricerca %>
+  <%# Input di Ricerca integrato con Turbo %>
   <div class="dropdown w-full">
-    <input type="text"
-           class="input w-full"
-           data-action="input->multi-autocomplete#search"
-           data-multi-autocomplete-target="input"
-           autocomplete="off"
-           placeholder="Cerca o aggiungi nuovo...">
+    <%= form_with url: search_url, method: :get,
+                  data: {
+                    turbo_frame: frame_id,
+                    controller: "autosubmit",
+                    action: "input->autosubmit#submit"
+                  } do |f| %>
 
-    <div data-multi-autocomplete-target="results" class="dropdown-content w-full z-[1]"></div>
+      <%= f.hidden_field :frame_id, value: frame_id %>
+
+      <%= f.text_field :query,
+       class: "input w-full",
+       data: { multi_autocomplete_target: "input" },
+       autocomplete: "off",
+       placeholder: "Cerca o aggiungi nuovo..." %>
+    <% end %>
+
+    <%= turbo_frame_tag frame_id, class: "dropdown-content w-full z-[1]" %>
   </div>
 
   <template data-multi-autocomplete-target="badgeTemplate">
