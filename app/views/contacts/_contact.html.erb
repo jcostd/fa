@@ -4,9 +4,7 @@
   <div>
     <div class="avatar avatar-placeholder">
       <div class="bg-neutral text-neutral-content w-10 rounded-full">
-	<span>
-	  <%= contact.avatar_initials %>
-	</span>
+        <span><%= contact.avatar_initials %></span>
       </div>
     </div>
   </div>
@@ -14,16 +12,20 @@
   <%# Colonna principale elastica (.list-col-grow) %>
   <div class="list-col-grow min-w-0">
     <div class="truncate">
-      <%# Il prima:absolute rende l'intera riga cliccabile %>
       <%= link_to contact.display_name,
-		  contact_path(contact),
-		  class: "font-semibold before:absolute before:inset-0 before:z-0",
-		  data: { turbo_frame: "_top" } %>
+                  contact_path(contact),
+                  class: "font-semibold before:absolute before:inset-0 before:z-0",
+                  data: { turbo_frame: "_top" } %>
     </div>
 
+    <%# SOTTOTITOLO DINAMICO %>
     <div class="text-xs opacity-60 truncate flex items-center gap-1">
-      <%= icon(contact.kind == "company" ? "company" : "user", classes: "size-3") %>
-      <%= contact.email.presence || contact.phone.presence || "Nessun recapito" %>
+      <% if local_assigns[:subtitle] %>
+        <%= subtitle %>
+      <% else %>
+        <%= icon(contact.kind == "company" ? "company" : "user", classes: "size-3") %>
+        <%= contact.email.presence || contact.phone.presence || "Nessun recapito" %>
+      <% end %>
     </div>
   </div>
 
@@ -33,22 +35,25 @@
     <div class="text-[10px] uppercase font-semibold opacity-40">P.IVA</div>
   </div>
 
-  <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 sm:opacity-0 opacity-100 transition-opacity relative z-10">
-    <%= link_to edit_contact_path(contact),
-		class: "btn btn-square btn-ghost btn-sm",
-		data: { turbo_frame: "modal" } do %>
-      <%= icon("edit", classes: "size-4 opacity-50") %>
-    <% end %>
+  <%# AZIONI (Nascondibili) %>
+  <% unless local_assigns[:hide_actions] %>
+    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 sm:opacity-0 opacity-100 transition-opacity relative z-10">
+      <%= link_to edit_contact_path(contact),
+                  class: "btn btn-square btn-ghost btn-sm",
+                  data: { turbo_frame: "modal" } do %>
+        <%= icon("edit", classes: "size-4 opacity-50") %>
+      <% end %>
 
-    <%= button_to contact_path(contact),
-		  method: :delete,
-		  class: "btn btn-square btn-ghost btn-sm hover:text-error",
-		  data: {
-		    turbo_frame: "_top",
-		    turbo_confirm: "Eliminare?"
-		  } do %>
-      <%= icon("trash", classes: "size-4 opacity-50") %>
-    <% end %>
-  </div>
+      <%= button_to contact_path(contact),
+                    method: :delete,
+                    class: "btn btn-square btn-ghost btn-sm hover:text-error",
+                    data: {
+                      turbo_frame: "_top",
+                      turbo_confirm: "Eliminare?"
+                    } do %>
+        <%= icon("trash", classes: "size-4 opacity-50") %>
+      <% end %>
+    </div>
+  <% end %>
 
 </li>

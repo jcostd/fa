@@ -104,94 +104,50 @@
 
         <ul class="list bg-base-100 rounded-box shadow-sm border border-base-200">
 
-          <%# --- FOTOGRAFI --- %>
-          <li class="p-4 pb-2 text-xs font-bold opacity-50 uppercase tracking-wider">Fotografi</li>
-
-          <% if photographers.present? %>
-            <% photographers.each do |participation| %>
-              <li class="list-row items-center">
-
-                <div class="avatar avatar-placeholder shrink-0">
-                  <div class="bg-primary/10 text-primary rounded-full w-10">
-                    <span class="font-bold text-sm"><%= participation.contact.display_name.first(2).upcase %></span>
-                  </div>
-                </div>
-
-                <div class="flex-1 min-w-0">
-                  <div class="font-bold truncate"><%= participation.contact.display_name %></div>
-                  <div class="text-sm opacity-60 truncate">
-                    <%= [participation.title, participation.contact.phone].compact_blank.join(" • ") %>
-                  </div>
-                </div>
-
-              </li>
-            <% end %>
-          <% else %>
-            <li class="list-row items-center text-error italic text-sm">
-              Nessun fotografo assegnato
-            </li>
-          <% end %>
+	  <%# --- FOTOGRAFI --- %>
+	  <li class="p-4 pb-2 text-xs font-bold opacity-50 uppercase tracking-wider">Fotografi</li>
+	  <% if photographers.present? %>
+	    <% photographers.each do |participation| %>
+	      <%= render "contacts/contact",
+			 contact: participation.contact,
+			 subtitle: [participation.title, participation.contact.phone].compact_blank.join(" • "),
+			 hide_actions: true %>
+	    <% end %>
+	  <% else %>
+	    <li class="list-row items-center text-error italic text-sm">
+	      Nessun fotografo assegnato
+	    </li>
+	  <% end %>
 
 
-          <%# --- CLIENTI --- %>
-          <% if clients.present? %>
-            <li class="p-4 pb-2 text-xs font-bold opacity-50 uppercase tracking-wider border-t border-base-200 mt-2">
-              Clienti
-            </li>
-
-            <% clients.each do |participation| %>
-              <li class="list-row items-center">
-
-                <div class="avatar avatar-placeholder shrink-0">
-                  <div class="bg-secondary/10 text-secondary rounded-full w-10">
-                    <span class="font-bold text-sm"><%= participation.contact.display_name.first(2).upcase %></span>
-                  </div>
-                </div>
-
-                <div class="flex-1 min-w-0">
-                  <div class="font-bold truncate"><%= participation.contact.display_name %></div>
-                  <% if participation.title.present? || participation.contact.email.present? %>
-                    <div class="text-sm opacity-60 truncate">
-                      <%= [participation.title, participation.contact.email].compact_blank.join(" • ") %>
-                    </div>
-                  <% end %>
-                </div>
-
-              </li>
-            <% end %>
-          <% end %>
+	  <%# --- CLIENTI --- %>
+	  <% if clients.present? %>
+	    <li class="p-4 pb-2 text-xs font-bold opacity-50 uppercase tracking-wider border-t border-base-200 mt-2">
+	      Clienti
+	    </li>
+	    <% clients.each do |participation| %>
+	      <%= render "contacts/contact",
+			 contact: participation.contact,
+			 subtitle: [participation.title, participation.contact.email].compact_blank.join(" • "),
+			 hide_actions: true %>
+	    <% end %>
+	  <% end %>
 
 
-          <%# --- SOGGETTI --- %>
-          <% if subjects.present? %>
-            <li class="p-4 pb-2 text-xs font-bold opacity-50 uppercase tracking-wider border-t border-base-200 mt-2">
-              Soggetti Fotografati
-            </li>
+	  <%# --- SOGGETTI --- %>
+	  <% if subjects.present? %>
+	    <li class="p-4 pb-2 text-xs font-bold opacity-50 uppercase tracking-wider border-t border-base-200 mt-2">
+	      Soggetti Fotografati
+	    </li>
+	    <% subjects.each do |participation| %>
+	      <%= render "contacts/contact",
+			 contact: participation.contact,
+			 subtitle: participation.title.present? ? "in veste di #{participation.title}" : nil,
+			 hide_actions: true %>
+	    <% end %>
+	  <% end %>
 
-            <% subjects.each do |participation| %>
-              <li class="list-row items-center">
-
-                <div class="avatar avatar-placeholder shrink-0">
-                  <div class="bg-base-200 text-base-content rounded-full w-10">
-                    <span class="font-bold text-sm"><%= participation.contact.display_name.first(2).upcase %></span>
-                  </div>
-                </div>
-
-                <div class="flex-1 min-w-0">
-                  <div class="font-bold truncate"><%= participation.contact.display_name %></div>
-
-                  <% if participation.title.present? %>
-                    <div class="text-sm opacity-80 font-medium italic truncate">
-                      in veste di <%= participation.title %>
-                    </div>
-                  <% end %>
-                </div>
-
-              </li>
-            <% end %>
-          <% end %>
-
-        </ul>
+	</ul>
       </div>
 
     </div>

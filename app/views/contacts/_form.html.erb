@@ -94,9 +94,18 @@
     </div>
   </fieldset>
 
-  <div class="modal-action mt-8">
-    <%= f.submit "Salva contatto", class: "btn btn-primary" %>
-    <button type="button" class="btn" data-action="dialog#close">Annulla</button>
-  </div>
+  <!-- Begin Actions -->
+  <div class="modal-action">
 
+    <%= f.submit "Salva", class: "btn btn-primary" %>
+
+    <button
+      type="button"
+      class="btn"
+      data-action="dialog#close">
+      Chiudi
+    </button>
+
+  </div>
+  <!-- End Actions -->
 <% end %>

@@ -1,46 +1,48 @@
-<%= form_with(
-  model: user,
-  class: "flex flex-col gap-5",
-  data: { turbo_frame: "_top" }
-) do |form| %>
+<%= form_with(model: user) do |f| %>
 
-  <%# Gestione Errori %>
-  <% if user.errors.any? %>
-    <div class="alert alert-error text-sm rounded-lg p-3">
-      <ul class="list-disc list-inside">
-        <% user.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%= render "shared/form_errors", object: user %>
 
-  <%# Campo Nickname %>
-  <div class="form-control w-full">
-    <%= form.label :nickname, class: "label font-bold pb-1" %>
-    <%= form.text_field :nickname, class: "input input-bordered w-full", autofocus: true %>
+  <fieldset class="fieldset">
+    <fieldset class="fieldset">
+      <%= f.label :nickname, class: "label" %>
+      <%= f.text_field :nickname, class: "input w-full", autofocus: true %>
+    </fieldset>
+
+
+    <fieldset class="fieldset">
+      <legend class="fieldset-legend">Sicurezza</legend>
+
+      <fieldset class="fieldset">
+	<%= f.label :password, class: "label flex justify-between" do %>
+	  <span>Nuova Password</span>
+	  <span class="text-xs font-normal opacity-60">Opzionale</span>
+	<% end %>
+
+	<%= f.password_field :password,
+	   class: "input w-full",
+	   placeholder: "Lascia vuoto per non cambiare" %>
+      </fieldset>
+
+      <fieldset class="fieldset">
+	<%= f.label :password_confirmation, "Conferma Nuova Password", class: "label" %>
+	<%= f.password_field :password_confirmation, class: "input w-full" %>
+      </fieldset>
+    </fieldset>
+  </fieldset>
+
+  <!-- Begin Actions -->
+  <div class="modal-action">
+
+    <%= f.submit "Salva", class: "btn btn-primary" %>
+
+    <button
+      type="button"
+      class="btn"
+      data-action="dialog#close">
+      Chiudi
+    </button>
+
   </div>
-
-  <%# Sezione Sicurezza (Cambio Password) %>
-  <div class="divider text-xs opacity-50 uppercase font-bold tracking-wider my-2">Sicurezza</div>
-
-  <div class="form-control w-full">
-    <%= form.label :password, class: "label font-bold pb-1 flex justify-between" do %>
-      <span>Nuova Password</span>
-      <span class="text-xs font-normal opacity-60">Opzionale</span>
-    <% end %>
-    <%= form.password_field :password, class: "input input-bordered w-full", placeholder: "Lascia vuoto per non cambiare" %>
-  </div>
-
-  <div class="form-control w-full">
-    <%= form.label :password_confirmation, "Conferma Nuova Password", class: "label font-bold pb-1" %>
-    <%= form.password_field :password_confirmation, class: "input input-bordered w-full" %>
-  </div>
-
-  <%# Azioni Form %>
-  <div class="modal-action mt-6 flex gap-2">
-    <%= link_to "Annulla", user_path(user), class: "btn flex-1 sm:flex-none" %>
-    <%= form.submit "Salva Modifiche", class: "btn btn-primary flex-1 sm:flex-none" %>
-  </div>
+  <!-- End Actions -->
 
 <% end %>

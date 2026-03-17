@@ -8,17 +8,13 @@ class UsersController < ApplicationController
 
   # GET /users/1/edit
   def edit
+    render layout: "modal"
   end
 
   # PATCH/PUT /users/1
   def update
-    respond_to do |format|
-      if @user.update(user_params)
-        format.html { redirect_to @user, notice: "Profilo aggiornato con successo." }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.turbo_stream { render :edit, status: :unprocessable_entity }
-      end
+    unless @user.update(user_params)
+      render :edit, layout: "modal", status: :unprocessable_entity
     end
   end
 

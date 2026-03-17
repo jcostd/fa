@@ -1,9 +1,0 @@
-<%= turbo_stream.replace "modal" do %>
-
-  <%= turbo_frame_tag "modal" do %>
-    <%= render layout: "shared/modal", locals: { title: "Modifica Profilo", icon_name: "person" } do %>
-      <%= render "form", user: @user %>
-    <% end %>
-  <% end %>
-
-<% end %>

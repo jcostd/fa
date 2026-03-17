@@ -19,7 +19,7 @@ class Jobs::ContactsController < ApplicationController
 
   def create
     @contact = Contact.new(contact_params)
-    @role = params[:role] # Fondamentale per l'evento JS!
+    @role = params[:role]
 
     unless @contact.save
       submit_url = jobs_contacts_path(role: @role)

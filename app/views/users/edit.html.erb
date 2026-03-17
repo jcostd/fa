@@ -1,9 +1,5 @@
-<%= turbo_frame_tag "modal" do %>
-
-  <%= render layout: "shared/modal", locals: { title: "Modifica Profilo", icon_name: "person" } do %>
-
-    <%= render "form", user: @user %>
-
-  <% end %>
-
+<% content_for :title do %>
+  Modifica Utente
 <% end %>
+
+<%= render "users/form", user: @user %>
