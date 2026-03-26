@@ -2,7 +2,7 @@
 service: fa
 
 # Name of the container image (use your-user/app-name on external registries).
-image: macpapo/fa
+image: jcostd/fa
 
 # Deploy to these servers.
 servers:
@@ -31,7 +31,7 @@ registry:
   server: ghcr.io
 
   # Needed for authenticated registries.
-  username: macpapo
+  username: jcostd
 
   # Always use an access token rather than real password when possible.
   password:
